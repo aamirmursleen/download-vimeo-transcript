@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free tool to download Vimeo transcript and captions easily. Extract and save Vimeo subtitles in VTT format without registration. Get Vimeo transcripts instantly.">
+    <meta name="keywords" content="download vimeo transcript, vimeo captions, vimeo subtitles, extract vimeo transcript, vimeo transcript downloader, vimeo captions download">
+    <title>Download Vimeo Transcript | Free Vimeo Captions Extractor Tool</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f1a;
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(25, 25, 35, 0.9);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #a4b0be;
+            font-size: 1rem;
+        }
+        
+        .input-section, .output-section {
+            margin-bottom: 2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background-color: rgba(45, 52, 54, 0.7);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 8px;
+            color: var(--light);
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .extract-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .download-btn {
+            background: linear-gradient(45deg, var(--success), #55efc4);
+            color: white;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .download-btn.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .clear-btn {
+            background: linear-gradient(45deg, var(--danger), #ff7675);
+            color: white;
+        }
+        
+        .result {
+            background-color: rgba(45, 52, 54, 0.7);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            word-break: break-all;
+            display: none;
+        }
+        
+        .result.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .url {
+            font-family: 'Consolas', monospace;
+            color: #55efc4;
+            word-break: break-all;
+        }
+        
+        .copy-icon {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            padding: 0.2rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .copy-icon:hover {
+            background-color: rgba(108, 92, 231, 0.3);
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status.success {
+            background-color: rgba(0, 184, 148, 0.2);
+            border: 1px solid var(--success);
+            color: #55efc4;
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .status.error {
+            background-color: rgba(214, 48, 49, 0.2);
+            border: 1px solid var(--danger);
+            color: #ff7675;
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Glow Effect */
+        .glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(rgba(108, 92, 231, 0.3), transparent 70%);
+            filter: blur(40px);
+            z-index: -1;
+            animation: pulse 10s infinite alternate;
+        }
+        
+        .glow:nth-child(1) {
+            top: -200px;
+            left: -200px;
+        }
+        
+        .glow:nth-child(2) {
+            bottom: -200px;
+            right: -200px;
+            background: radial-gradient(rgba(0, 184, 148, 0.3), transparent 70%);
+            animation-delay: 3s;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 0.8; transform: scale(1.2); }
+        }
+        
+        /* Loading Animation */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .extracting .loader {
+            display: inline-block;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.5rem;
+            font-size: 1rem;
+            color: var(--secondary);
+            cursor: help;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(45, 52, 54, 0.95);
+            color: var(--light);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: normal;
+            font-size: 0.85rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #a4b0be;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="glow"></div>
+    
+    <div class="container">
+        <h1>Vimeo Transcript Extractor</h1>
+        <p class="description">Extract and download Vimeo transcripts from source code</p>
+        
+        <div class="input-section">
+            <label for="source-code">
+                Paste Vimeo Source Code or URL String 
+                <span class="tooltip">?
+                    <span class="tooltip-text">Paste the Vimeo source code or the string containing the texttrack information</span>
+                </span>
+            </label>
+            <textarea id="source-code" placeholder='Paste source code or URL containing "/texttrack/" section...'></textarea>
+            
+            <div class="buttons">
+                <button class="extract-btn" id="extract-btn">
+                    <span class="btn-text">Extract Transcript URL</span>
+                    <span class="loader"></span>
+                </button>
+                <button class="clear-btn" id="clear-btn">Clear</button>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <div class="status" id="status"></div>
+            
+            <div class="result" id="result">
+                <label>Extracted Transcript URL:</label>
+                <div class="url" id="extracted-url"></div>
+                
+                <div class="buttons">
+                    <button class="download-btn" id="download-btn">Download Transcript</button>
+                    <button class="clear-btn" id="copy-btn">Copy URL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="seo-content">
+            <h2>🚀 How to Download Vimeo Transcript in Seconds</h2>
+            
+            <p>Getting access to Vimeo video transcripts can be incredibly valuable for content creators, students, researchers, and professionals. Our <strong>free Vimeo transcript downloader</strong> makes this process simple and straightforward with no registration required.</p>
+            
+            <div class="section-divider"></div>
+            
+            <h3>🤔 Why Download Vimeo Transcripts?</h3>
+            
+            <p>Vimeo transcripts (also called captions or subtitles) contain valuable text from videos that can be used for:</p>
+            
+            <ul>
+                <li><span class="emoji">📝</span> Creating accurate notes from educational videos</li>
+                <li><span class="emoji">✍️</span> Repurposing video content into blog posts or articles</li>
+                <li><span class="emoji">👂</span> Improving accessibility for hearing-impaired viewers</li>
+                <li><span class="emoji">🌐</span> Translating content into other languages</li>
+                <li><span class="emoji">🔍</span> SEO optimization of your own video content</li>
+                <li><span class="emoji">📚</span> Research and citation purposes</li>
+            </ul>
+            
+            <div class="section-divider"></div>
+            
+            <h3>⚙️ How Our Vimeo Transcript Download Tool Works</h3>
+            
+            <p>Our easy-to-use tool lets you quickly download transcripts from Vimeo videos in just seconds:</p>
+            
+            <ul>
+                <li><span class="emoji">🔍</span> <strong>Simple Interface</strong> - Just paste the video information in the box above</li>
+                <li><span class="emoji">⚡</span> <strong>Instant Processing</strong> - Our tool automatically extracts the transcript URL</li>
+                <li><span class="emoji">💾</span> <strong>One-Click Download</strong> - Get your transcript file with a single click</li>
+            </ul>
+            
+            <p>The transcript will be saved as a VTT file, which can be opened with any text editor or imported into subtitle editing software for further use.</p>
+            
+            <div class="section-divider"></div>
+            
+            <h3>💪 Advantages of Our Vimeo Transcript Extractor</h3>
+            
+            <p>Unlike other methods to <strong>download Vimeo captions</strong>, our tool offers several key benefits:</p>
+            
+            <ul>
+                <li><span class="emoji">💯</span> <strong>100% Free</strong> - No hidden fees or premium features</li>
+                <li><span class="emoji">🔌</span> <strong>No Installation</strong> - Works directly in your browser</li>
+                <li><span class="emoji">⚡</span> <strong>Fast Processing</strong> - Get your transcript in seconds</li>
+                <li><span class="emoji">🔒</span> <strong>Privacy Focused</strong> - We don't store your data or videos</li>
+                <li><span class="emoji">📄</span> <strong>Compatible Format</strong> - Downloads in standard VTT format</li>
+            </ul>
+            
+            <div class="section-divider"></div>
+            
+            <p>Whether you need to <strong>download Vimeo subtitles</strong> for content creation, study purposes, or accessibility, our tool provides a simple solution that works with any Vimeo video that has captions available.</p>
+            
+            <p>✨ Start using our <strong>Vimeo transcript downloader</strong> today and unlock the valuable text content inside your favorite Vimeo videos! ✨</p>
+        </div>
+    </div>
+    
+    <footer>
+        Created for extracting Vimeo transcripts | Use responsibly
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sourceCodeInput = document.getElementById('source-code');
+            const extractBtn = document.getElementById('extract-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const resultDiv = document.getElementById('result');
+            const extractedUrlDiv = document.getElementById('extracted-url');
+            const statusDiv = document.getElementById('status');
+            
+            let extractedUrl = '';
+            
+            // Extract transcript URL
+            extractBtn.addEventListener('click', function() {
+                const sourceCode = sourceCodeInput.value.trim();
+                
+                if (!sourceCode) {
+                    showStatus('Please paste the source code or URL string first.', 'error');
+                    return;
+                }
+                
+                extractBtn.classList.add('extracting');
+                
+                // Simulate processing (for UI effect)
+                setTimeout(() => {
+                    try {
+                        // Look for the texttrack pattern
+                        const regex = /\/texttrack\/(\d+\.vtt\?token=[^"'\s]+)/;
+                        const match = sourceCode.match(regex);
+                        
+                        if (match && match[0]) {
+                            const textrackPath = match[0];
+                            
+                            // Construct the full URL
+                            extractedUrl = `https://player.vimeo.com${textrackPath}`;
+                            
+                            // Display result
+                            extractedUrlDiv.textContent = extractedUrl;
+                            resultDiv.classList.add('active');
+                            downloadBtn.classList.add('active');
+                            
+                            showStatus('Transcript URL successfully extracted!', 'success');
+                        } else {
+                            showStatus('Could not find any texttrack pattern in the provided source. Please make sure you provided the correct source.', 'error');
+                        }
+                        
+                        extractBtn.classList.remove('extracting');
+                    } catch (error) {
+                        showStatus('An error occurred while processing: ' + error.message, 'error');
+                        extractBtn.classList.remove('extracting');
+                    }
+                }, 800); // Simulated processing time for UI effect
+            });
+            
+            // Clear all inputs and results
+            clearBtn.addEventListener('click', function() {
+                sourceCodeInput.value = '';
+                extractedUrlDiv.textContent = '';
+                resultDiv.classList.remove('active');
+                downloadBtn.classList.remove('active');
+                statusDiv.className = 'status';
+                statusDiv.textContent = '';
+                extractedUrl = '';
+            });
+            
+            // Download transcript
+            downloadBtn.addEventListener('click', function() {
+                if (!extractedUrl) {
+                    showStatus('No transcript URL to download. Please extract a URL first.', 'error');
+                    return;
+                }
+                
+                downloadBtn.innerHTML = '<span class="loader"></span> Downloading...';
+                
+                // Fetch and download the transcript
+                fetch(extractedUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        // Create a download link
+                        const blob = new Blob([data], { type: 'text/vtt' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        
+                        // Extract video ID for filename
+                        const videoIdMatch = extractedUrl.match(/\/texttrack\/(\d+)/);
+                        const videoId = videoIdMatch ? videoIdMatch[1] : 'transcript';
+                        
+                        a.href = url;
+                        a.download = `vimeo_transcript_${videoId}.vtt`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        showStatus('Transcript downloaded successfully!', 'success');
+                        downloadBtn.innerHTML = 'Download Transcript';
+                    })
+                    .catch(error => {
+                        showStatus(`Failed to download transcript: ${error.message}. Try copying the URL manually.`, 'error');
+                        downloadBtn.innerHTML = 'Download Transcript';
+                    });
+            });
+            
+            // Copy URL to clipboard
+            copyBtn.addEventListener('click', function() {
+                if (!extractedUrl) {
+                    showStatus('No URL to copy. Please extract a URL first.', 'error');
+                    return;
+                }
+                
+                navigator.clipboard.writeText(extractedUrl)
+                    .then(() => {
+                        showStatus('URL copied to clipboard!', 'success');
+                    })
+                    .catch(err => {
+                        showStatus('Failed to copy URL: ' + err.message, 'error');
+                    });
+            });
+            
+            // Helper function to show status messages
+            function showStatus(message, type) {
+                statusDiv.textContent = message;
+                statusDiv.className = 'status';
+                statusDiv.classList.add(type);
+                
+                // Auto-hide success messages after 5 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        statusDiv.classList.remove('success');
+                    }, 5000);
+                }
+            }
+            
+            // Add some initial animation
+            setTimeout(() => {
+                document.querySelector('.container').style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
